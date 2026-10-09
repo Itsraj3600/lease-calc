@@ -3,352 +3,200 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>KM Tracker</title>
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Lease KM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #000000;
-    --surface: #0a0a0a;
-    --surface-2: #121212;
-    --line: rgba(255,255,255,0.08);
-    --text: #f2f0ea;
-    --text-dim: #8a8a86;
-    --accent: #ffb300;
-    --accent-dim: rgba(255,179,0,0.14);
-    --danger: #ff6b52;
-    box-sizing: border-box;
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --bg:#000; --surface:#0a0a0a; --surface-2:#141414;
+    --line:rgba(255,255,255,.08); --text:#f2f0ea; --dim:#8a8a86;
+    --accent:#ffb300; --accent-dim:rgba(255,179,0,.14); --danger:#ff6b52;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
   }
-  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
-  * { box-sizing: border-box; }
-  html, body {
-    height: 100%;
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    -webkit-tap-highlight-color: transparent;
-  }
-  body {
-    display: flex;
-    justify-content: center;
-    min-height: 100%;
-    padding: 20px 16px 32px;
-  }
-  .app {
-    width: 100%;
-    max-width: 420px;
-  }
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+  body{min-height:100%;display:flex;justify-content:center;padding:20px 16px 36px}
+  .app{width:100%;max-width:480px}
 
-  .top {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 22px;
-  }
-  .top h1 {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0;
-    letter-spacing: 0.01em;
-  }
-  .top span {
-    font-size: 12px;
-    color: var(--text-dim);
-  }
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px}
+  .top h1{font-size:15px;font-weight:600;margin:0}
+  .top small{display:block;font-size:12px;color:var(--dim);margin-top:2px}
+  #installBtn{display:none;background:var(--accent);color:#000;border:none;border-radius:999px;
+    font:600 13px 'Inter',sans-serif;padding:9px 16px;cursor:pointer}
+  #installBtn:active{opacity:.8}
 
-  .hero {
-    text-align: center;
-    padding: 30px 12px 26px;
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    background: radial-gradient(120% 100% at 50% 0%, var(--accent-dim), transparent 60%), var(--surface);
-    margin-bottom: 14px;
-  }
-  .hero-label {
-    font-size: 13px;
-    color: var(--text-dim);
-    margin: 0 0 6px;
-  }
-  .hero-value {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 600;
-    font-size: 64px;
-    line-height: 1;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-  }
-  .hero-unit {
-    font-size: 14px;
-    color: var(--text-dim);
-    margin-top: 6px;
-  }
-  .hero.over .hero-value { color: var(--danger); }
+  .hero{text-align:center;padding:30px 12px 24px;border:1px solid var(--line);border-radius:22px;
+    background:radial-gradient(120% 100% at 50% 0%,var(--accent-dim),transparent 60%),var(--surface);margin-bottom:12px}
+  .hero p{margin:0}
+  .hero-label{font-size:13px;color:var(--dim);margin-bottom:6px!important}
+  .hero-value{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(56px,16vw,76px);line-height:1;color:var(--accent);letter-spacing:-.02em}
+  .hero-unit{font-size:14px;color:var(--dim);margin-top:6px!important}
+  .hero.over .hero-value{color:var(--danger)}
+  .bar{height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin:20px 6px 0}
+  .bar i{display:block;height:100%;width:0;border-radius:999px;background:var(--accent);transition:width .4s ease}
+  .bar.over i{background:var(--danger)}
+  .cap{display:flex;justify-content:space-between;font:11px 'IBM Plex Mono',monospace;color:var(--dim);margin:8px 6px 0}
 
-  .bar-track {
-    height: 6px;
-    border-radius: 999px;
-    background: var(--surface-2);
-    overflow: hidden;
-    margin: 18px 4px 0;
-  }
-  .bar-fill {
-    height: 100%;
-    border-radius: 999px;
-    background: var(--accent);
-    transition: width 0.4s ease;
-  }
-  .bar-fill.over { background: var(--danger); }
-  .bar-caption {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--text-dim);
-    margin: 8px 4px 0;
-    font-family: 'IBM Plex Mono', monospace;
-  }
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .stat{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:15px 16px 13px}
+  .stat p{margin:0 0 4px;font-size:12px;color:var(--dim)}
+  .stat div{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:21px}
+  .stat div span{font-size:12px;color:var(--dim);font-weight:500}
 
-  .stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-  .stat {
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    background: var(--surface);
-    padding: 16px 16px 14px;
-  }
-  .stat-label {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin: 0 0 4px;
-  }
-  .stat-value {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 600;
-    font-size: 22px;
-  }
+  .card{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:6px 16px}
+  .field{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0}
+  .field label{font-size:14px}
+  .field input{background:transparent;border:none;outline:none;color:var(--accent);
+    font:600 18px 'IBM Plex Mono',monospace;text-align:right;width:150px;-moz-appearance:textfield}
+  .field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .note{font-size:12px;color:var(--dim);text-align:center;margin:14px 8px 0;line-height:1.5}
 
-  .card {
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    background: var(--surface);
-    padding: 6px 16px 4px;
-    margin-bottom: 14px;
+  /* PC / wide screens */
+  @media (min-width:860px){
+    body{align-items:center;padding:40px}
+    .app{max-width:860px;display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:start}
+    .top{grid-column:1/-1;margin-bottom:4px}
+    .left,.right{display:flex;flex-direction:column}
+    .hero{margin-bottom:0}
+    .note{grid-column:1/-1}
   }
-  .field {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 13px 0;
-    border-bottom: 1px solid var(--line);
-    gap: 12px;
-  }
-  .field:last-child { border-bottom: none; }
-  .field label {
-    font-size: 14px;
-    color: var(--text);
-  }
-  .field input {
-    background: transparent;
-    border: none;
-    color: var(--accent);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 16px;
-    font-weight: 600;
-    text-align: right;
-    width: 140px;
-    outline: none;
-    -moz-appearance: textfield;
-  }
-  .field input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(4) hue-rotate(0deg); opacity: 0.8; }
-  .field input::-webkit-outer-spin-button,
-  .field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  .field input:focus { color: #ffd166; }
-
-  .reset {
-    width: 100%;
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    padding: 14px 0 4px;
-    text-align: center;
-  }
-  .reset:active { color: var(--text); }
 </style>
 </head>
 <body>
 <div class="app">
 
   <div class="top">
-    <h1>Lease KM</h1>
-    <span id="today"></span>
+    <div>
+      <h1>Lease KM</h1>
+      <small id="sub"></small>
+    </div>
+    <button id="installBtn">Install app</button>
   </div>
 
-  <div class="hero" id="heroBox">
-    <p class="hero-label" id="heroLabel">km available per day</p>
-    <div class="hero-value" id="kmPerDay">–</div>
-    <p class="hero-unit" id="heroSub">to stay on pace</p>
-
-    <div class="bar-track"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
-    <div class="bar-caption">
-      <span id="barUsedLabel">0 km used</span>
-      <span id="barTotalLabel">0 km total</span>
-    </div>
-  </div>
-
-  <div class="stats">
-    <div class="stat">
-      <p class="stat-label">Remaining</p>
-      <div class="stat-value" id="kmRemaining">–</div>
-    </div>
-    <div class="stat">
-      <p class="stat-label">Days left</p>
-      <div class="stat-value" id="daysRemaining">–</div>
+  <div class="left">
+    <div class="hero" id="hero">
+      <p class="hero-label" id="hLabel">km available per day</p>
+      <p class="hero-value" id="hVal">–</p>
+      <p class="hero-unit" id="hSub">to stay on pace</p>
+      <div class="bar" id="bar"><i id="barFill"></i></div>
+      <div class="cap"><span id="capUsed">0 km used</span><span>50,000 km</span></div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="field">
-      <label for="totalKm">Lease total (km)</label>
-      <input id="totalKm" type="number" inputmode="numeric" placeholder="36000">
+  <div class="right">
+    <div class="grid">
+      <div class="stat"><p>Remaining</p><div id="rem">–</div></div>
+      <div class="stat"><p>Days left</p><div id="days">–</div></div>
+      <div class="stat"><p>Per week</p><div id="wk">–</div></div>
+      <div class="stat"><p>Per month</p><div id="mo">–</div></div>
     </div>
-    <div class="field">
-      <label for="usedKm">Used so far (km)</label>
-      <input id="usedKm" type="number" inputmode="numeric" placeholder="12450">
-    </div>
-    <div class="field">
-      <label for="endDate">Lease ends</label>
-      <input id="endDate" type="date">
+
+    <div class="card">
+      <div class="field">
+        <label for="used">Odometer used (km)</label>
+        <input id="used" type="number" inputmode="numeric" placeholder="0">
+      </div>
     </div>
   </div>
 
-  <button class="reset" id="resetBtn">Clear saved values</button>
-
+  <p class="note" id="note"></p>
 </div>
 
 <script>
+  // ===== FIXED LEASE SETTINGS — edit here if they ever change =====
+  const TOTAL_KM = 50000;
+  const END_DATE = new Date(2028, 7, 26); // year, month (0=Jan → 7=Aug), day
+  // ================================================================
+
   const $ = id => document.getElementById(id);
-  const totalKmEl = $('totalKm'), usedKmEl = $('usedKm'), endDateEl = $('endDate');
-  const STORAGE_KEY = 'km-tracker-v1';
+  const KEY = 'lease-km-used';
+  const fmt = n => Math.round(n).toLocaleString('en-US');
+  const NOTE = '50,000 km total · update the odometer field whenever you check';
 
-  function load() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const d = JSON.parse(raw);
-      if (d.totalKm != null) totalKmEl.value = d.totalKm;
-      if (d.usedKm != null) usedKmEl.value = d.usedKm;
-      if (d.endDate) endDateEl.value = d.endDate;
-    } catch (e) { /* ignore */ }
+  function daysLeft(){
+    const n = new Date();
+    const today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    return Math.ceil((END_DATE - today) / 86400000);
   }
 
-  function save() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        totalKm: totalKmEl.value,
-        usedKm: usedKmEl.value,
-        endDate: endDateEl.value
-      }));
-    } catch (e) { /* ignore */ }
-  }
+  function calc(){
+    const used = Math.max(0, parseFloat($('used').value) || 0);
+    const rem = TOTAL_KM - used;
+    const d = daysLeft();
+    const pct = Math.min(100, used / TOTAL_KM * 100);
 
-  function fmt(n) {
-    return Math.round(n).toLocaleString('en-US');
-  }
+    $('sub').textContent = 'Ends ' + END_DATE.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    $('capUsed').textContent = fmt(used) + ' km used';
+    $('barFill').style.width = pct + '%';
+    $('rem').innerHTML = fmt(rem) + ' <span>km</span>';
+    $('days').textContent = d > 0 ? fmt(d) : '0';
 
-  function daysBetween(endDateStr) {
-    const end = new Date(endDateStr + 'T00:00:00');
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const diffMs = end - today;
-    return Math.ceil(diffMs / 86400000);
-  }
+    const over = rem < 0;
+    $('hero').classList.toggle('over', over);
+    $('bar').classList.toggle('over', over);
 
-  function recalc() {
-    const total = parseFloat(totalKmEl.value);
-    const used = parseFloat(usedKmEl.value);
-    const endDate = endDateEl.value;
-
-    $('today').textContent = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
-    if (!isNaN(total) && total > 0) {
-      $('barTotalLabel').textContent = fmt(total) + ' km total';
+    if (d <= 0){
+      $('hLabel').textContent = over ? 'km over limit' : 'lease ended';
+      $('hVal').textContent = fmt(Math.abs(rem));
+      $('hSub').textContent = over ? 'over your allowance' : 'km left unused';
+      $('wk').innerHTML = '– <span>km</span>';
+      $('mo').innerHTML = '– <span>km</span>';
     } else {
-      $('barTotalLabel').textContent = '— km total';
+      const perDay = rem / d;
+      $('hLabel').textContent = over ? 'km over limit' : 'km available per day';
+      $('hVal').textContent = over ? fmt(Math.abs(rem)) : perDay.toFixed(perDay < 100 ? 1 : 0);
+      $('hSub').textContent = over ? 'allowance exceeded' : 'to stay on pace';
+      $('wk').innerHTML = fmt(perDay * 7) + ' <span>km</span>';
+      $('mo').innerHTML = fmt(perDay * 30.4375) + ' <span>km</span>';
     }
-    $('barUsedLabel').textContent = (!isNaN(used) ? fmt(used) : '0') + ' km used';
-
-    if (isNaN(total) || total <= 0) {
-      resetOutputs('Enter your lease total km');
-      return;
-    }
-    const safeUsed = isNaN(used) ? 0 : used;
-    const remaining = total - safeUsed;
-
-    $('kmRemaining').textContent = fmt(remaining) + ' km';
-    const pct = Math.max(0, Math.min(100, (safeUsed / total) * 100));
-    const fill = $('barFill');
-    fill.style.width = pct + '%';
-
-    let days = null;
-    if (endDate) {
-      days = daysBetween(endDate);
-    }
-
-    if (days === null) {
-      $('daysRemaining').textContent = '–';
-      $('heroLabel').textContent = 'km remaining';
-      $('kmPerDay').textContent = fmt(remaining);
-      $('heroSub').textContent = 'set your end date for a daily rate';
-      $('heroBox').classList.remove('over');
-      fill.classList.remove('over');
-      return;
-    }
-
-    $('daysRemaining').textContent = days > 0 ? days : (days === 0 ? '0' : fmt(days));
-
-    if (days <= 0) {
-      $('heroLabel').textContent = remaining < 0 ? 'km over limit' : 'lease ended';
-      $('kmPerDay').textContent = fmt(Math.abs(remaining));
-      $('heroSub').textContent = remaining < 0 ? 'over your total allowance' : 'no days remaining';
-      $('heroBox').classList.toggle('over', remaining < 0);
-      fill.classList.toggle('over', remaining < 0);
-      return;
-    }
-
-    const perDay = remaining / days;
-    $('heroLabel').textContent = 'km available per day';
-    $('kmPerDay').textContent = fmt(Math.abs(perDay));
-    $('heroSub').textContent = perDay >= 0 ? 'to stay on pace' : 'over pace — already exceeded';
-    $('heroBox').classList.toggle('over', perDay < 0);
-    fill.classList.toggle('over', perDay < 0 || pct >= 100);
-
-    save();
   }
 
-  [totalKmEl, usedKmEl, endDateEl].forEach(el => {
-    el.addEventListener('input', recalc);
-    el.addEventListener('change', recalc);
+  $('note').textContent = NOTE;
+  try { const v = localStorage.getItem(KEY); if (v) $('used').value = v; } catch(e){}
+  $('used').addEventListener('input', () => {
+    try { localStorage.setItem(KEY, $('used').value); } catch(e){}
+    calc();
   });
+  calc();
 
-  $('resetBtn').addEventListener('click', () => {
-    localStorage.removeItem(STORAGE_KEY);
-    totalKmEl.value = '';
-    usedKmEl.value = '';
-    endDateEl.value = '';
-    recalc();
+  // ===== Install (Android / Chrome / Edge) =====
+  let deferred = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferred = e;
+    $('installBtn').style.display = 'inline-block';
   });
+  $('installBtn').addEventListener('click', async () => {
+    if (!deferred) return;
+    deferred.prompt();
+    await deferred.userChoice;
+    deferred = null;
+    $('installBtn').style.display = 'none';
+  });
+  window.addEventListener('appinstalled', () => { $('installBtn').style.display = 'none'; });
 
-  load();
-  recalc();
+  // Fallback hint on Android if the browser doesn't offer the install prompt
+  setTimeout(() => {
+    const standalone = matchMedia('(display-mode: standalone)').matches;
+    if (!deferred && !standalone && /Android/i.test(navigator.userAgent)){
+      $('note').textContent = NOTE + ' · To install: browser menu ⋮ → Add to Home screen';
+    }
+  }, 1500);
+
+  // PWA manifest (enables the install prompt when hosted on your own site)
+  try {
+    const icon = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#000"/><circle cx="256" cy="256" r="150" fill="none" stroke="#ffb300" stroke-width="36"/><path d="M256 256 L340 190" stroke="#ffb300" stroke-width="30" stroke-linecap="round"/></svg>');
+    const m = {name:"Lease KM",short_name:"Lease KM",display:"standalone",background_color:"#000000",theme_color:"#000000",start_url:location.href,icons:[{src:icon,sizes:"512x512",type:"image/svg+xml",purpose:"any"}]};
+    const l = document.createElement('link'); l.rel='manifest';
+    l.href = URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}));
+    document.head.appendChild(l);
+  } catch(e){}
 </script>
 </body>
 </html>
