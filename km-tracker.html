@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KM Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --surface: #0a0a0a;
+    --surface-2: #121212;
+    --line: rgba(255,255,255,0.08);
+    --text: #f2f0ea;
+    --text-dim: #8a8a86;
+    --accent: #ffb300;
+    --accent-dim: rgba(255,179,0,0.14);
+    --danger: #ff6b52;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+    min-height: 100%;
+    padding: 20px 16px 32px;
+  }
+  .app {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .top h1 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+  .top span {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .hero {
+    text-align: center;
+    padding: 30px 12px 26px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: radial-gradient(120% 100% at 50% 0%, var(--accent-dim), transparent 60%), var(--surface);
+    margin-bottom: 14px;
+  }
+  .hero-label {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: 0 0 6px;
+  }
+  .hero-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .hero-unit {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+  .hero.over .hero-value { color: var(--danger); }
+
+  .bar-track {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+    margin: 18px 4px 0;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--accent);
+    transition: width 0.4s ease;
+  }
+  .bar-fill.over { background: var(--danger); }
+  .bar-caption {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin: 8px 4px 0;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+    padding: 16px 16px 14px;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin: 0 0 4px;
+  }
+  .stat-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 22px;
+  }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--surface);
+    padding: 6px 16px 4px;
+    margin-bottom: 14px;
+  }
+  .field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+    gap: 12px;
+  }
+  .field:last-child { border-bottom: none; }
+  .field label {
+    font-size: 14px;
+    color: var(--text);
+  }
+  .field input {
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: right;
+    width: 140px;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .field input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate(4) hue-rotate(0deg); opacity: 0.8; }
+  .field input::-webkit-outer-spin-button,
+  .field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .field input:focus { color: #ffd166; }
+
+  .reset {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    padding: 14px 0 4px;
+    text-align: center;
+  }
+  .reset:active { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="top">
+    <h1>Lease KM</h1>
+    <span id="today"></span>
+  </div>
+
+  <div class="hero" id="heroBox">
+    <p class="hero-label" id="heroLabel">km available per day</p>
+    <div class="hero-value" id="kmPerDay">–</div>
+    <p class="hero-unit" id="heroSub">to stay on pace</p>
+
+    <div class="bar-track"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+    <div class="bar-caption">
+      <span id="barUsedLabel">0 km used</span>
+      <span id="barTotalLabel">0 km total</span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <p class="stat-label">Remaining</p>
+      <div class="stat-value" id="kmRemaining">–</div>
+    </div>
+    <div class="stat">
+      <p class="stat-label">Days left</p>
+      <div class="stat-value" id="daysRemaining">–</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label for="totalKm">Lease total (km)</label>
+      <input id="totalKm" type="number" inputmode="numeric" placeholder="36000">
+    </div>
+    <div class="field">
+      <label for="usedKm">Used so far (km)</label>
+      <input id="usedKm" type="number" inputmode="numeric" placeholder="12450">
+    </div>
+    <div class="field">
+      <label for="endDate">Lease ends</label>
+      <input id="endDate" type="date">
+    </div>
+  </div>
+
+  <button class="reset" id="resetBtn">Clear saved values</button>
+
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const totalKmEl = $('totalKm'), usedKmEl = $('usedKm'), endDateEl = $('endDate');
+  const STORAGE_KEY = 'km-tracker-v1';
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (d.totalKm != null) totalKmEl.value = d.totalKm;
+      if (d.usedKm != null) usedKmEl.value = d.usedKm;
+      if (d.endDate) endDateEl.value = d.endDate;
+    } catch (e) { /* ignore */ }
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        totalKm: totalKmEl.value,
+        usedKm: usedKmEl.value,
+        endDate: endDateEl.value
+      }));
+    } catch (e) { /* ignore */ }
+  }
+
+  function fmt(n) {
+    return Math.round(n).toLocaleString('en-US');
+  }
+
+  function daysBetween(endDateStr) {
+    const end = new Date(endDateStr + 'T00:00:00');
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffMs = end - today;
+    return Math.ceil(diffMs / 86400000);
+  }
+
+  function recalc() {
+    const total = parseFloat(totalKmEl.value);
+    const used = parseFloat(usedKmEl.value);
+    const endDate = endDateEl.value;
+
+    $('today').textContent = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    if (!isNaN(total) && total > 0) {
+      $('barTotalLabel').textContent = fmt(total) + ' km total';
+    } else {
+      $('barTotalLabel').textContent = '— km total';
+    }
+    $('barUsedLabel').textContent = (!isNaN(used) ? fmt(used) : '0') + ' km used';
+
+    if (isNaN(total) || total <= 0) {
+      resetOutputs('Enter your lease total km');
+      return;
+    }
+    const safeUsed = isNaN(used) ? 0 : used;
+    const remaining = total - safeUsed;
+
+    $('kmRemaining').textContent = fmt(remaining) + ' km';
+    const pct = Math.max(0, Math.min(100, (safeUsed / total) * 100));
+    const fill = $('barFill');
+    fill.style.width = pct + '%';
+
+    let days = null;
+    if (endDate) {
+      days = daysBetween(endDate);
+    }
+
+    if (days === null) {
+      $('daysRemaining').textContent = '–';
+      $('heroLabel').textContent = 'km remaining';
+      $('kmPerDay').textContent = fmt(remaining);
+      $('heroSub').textContent = 'set your end date for a daily rate';
+      $('heroBox').classList.remove('over');
+      fill.classList.remove('over');
+      return;
+    }
+
+    $('daysRemaining').textContent = days > 0 ? days : (days === 0 ? '0' : fmt(days));
+
+    if (days <= 0) {
+      $('heroLabel').textContent = remaining < 0 ? 'km over limit' : 'lease ended';
+      $('kmPerDay').textContent = fmt(Math.abs(remaining));
+      $('heroSub').textContent = remaining < 0 ? 'over your total allowance' : 'no days remaining';
+      $('heroBox').classList.toggle('over', remaining < 0);
+      fill.classList.toggle('over', remaining < 0);
+      return;
+    }
+
+    const perDay = remaining / days;
+    $('heroLabel').textContent = 'km available per day';
+    $('kmPerDay').textContent = fmt(Math.abs(perDay));
+    $('heroSub').textContent = perDay >= 0 ? 'to stay on pace' : 'over pace — already exceeded';
+    $('heroBox').classList.toggle('over', perDay < 0);
+    fill.classList.toggle('over', perDay < 0 || pct >= 100);
+
+    save();
+  }
+
+  [totalKmEl, usedKmEl, endDateEl].forEach(el => {
+    el.addEventListener('input', recalc);
+    el.addEventListener('change', recalc);
+  });
+
+  $('resetBtn').addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    totalKmEl.value = '';
+    usedKmEl.value = '';
+    endDateEl.value = '';
+    recalc();
+  });
+
+  load();
+  recalc();
+</script>
+</body>
+</html>
